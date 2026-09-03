@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MPC Global — Clinical Appointment Booking Matrix</title>
+  <meta name="description" content="High-density Google Sheet style appointment booking and clinical scheduling system for My Pain Clinic Global.">
+  
+  <!-- Premium Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- LEFT COMPACT DARK-NAVY SIDEBAR -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-top-group">
+        <!-- Brand Mark -->
+        <div class="sidebar-brand">
+          <div class="brand-logo-mark" title="My Pain Clinic Global">
+            <span>MPC</span>
+          </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <ul class="sidebar-menu">
+          <li class="sidebar-item">
+            <a class="sidebar-link" title="Dashboard">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+              </svg>
+            </a>
+            <span class="sidebar-tooltip">Dashboard</span>
+          </li>
+
+          <li class="sidebar-item active">
+            <a class="sidebar-link" title="Availability Calendar">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </a>
+            <span class="sidebar-tooltip">Availability Calendar</span>
+          </li>
+
+          <li class="sidebar-item">
+            <a class="sidebar-link" title="Patients Directory">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+            </a>
+            <span class="sidebar-tooltip">Patients Directory</span>
+          </li>
+
+          <li class="sidebar-item">
+            <a class="sidebar-link" title="Doctors & Staff">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+              </svg>
+            </a>
+            <span class="sidebar-tooltip">Doctors & Staff</span>
+          </li>
+
+          <li class="sidebar-item">
+            <a class="sidebar-link" title="Treatments & Pods">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+              </svg>
+            </a>
+            <span class="sidebar-tooltip">Treatments</span>
+          </li>
+
+          <li class="sidebar-item">
+            <a class="sidebar-link" title="Reports & Analytics">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+            </a>
+            <span class="sidebar-tooltip">Reports</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Sidebar Bottom Settings -->
+      <div class="sidebar-bottom">
+        <a class="sidebar-link" title="Settings">
+          <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </a>
+      </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="app-main">
+
+      <!-- 1. TOP GLOBAL HEADER -->
+      <header class="top-header">
+        <div class="header-left">
+          <div class="clinic-title-badge">
+            <h1 class="clinic-title">My Pain Clinic Global</h1>
+            <span class="clinic-branch">
+              <span class="branch-live-dot"></span>
+              Mumbai Clinic
+            </span>
+          </div>
+        </div>
+
+        <!-- Global Search -->
+        <div class="header-search">
+          <div class="search-input-wrap">
+            <svg class="search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input type="text" id="global-patient-search" class="search-input" placeholder="Search patients by name, phone or ID (min 3 chars)...">
+            <span class="search-kbd">⌘K</span>
+          </div>
+        </div>
+
+        <!-- Header Actions & Profile -->
+        <div class="header-right">
+          <!-- Focus Mode Toggle -->
+          <button class="btn-focus-mode" id="btn-focus-mode" title="Focus Mode — show only the booking sheet (press Escape to exit)">
+            <svg id="focus-icon-expand" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 8V6a2 2 0 012-2h2M4 16v2a2 2 0 002 2h2m8-16h2a2 2 0 012 2v2m0 8v2a2 2 0 01-2 2h-2"/>
+            </svg>
+            <svg id="focus-icon-compress" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" style="display:none;">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V6m0 3H6m3 0l-3-3m9 3V6m0 3h3m-3 0l3-3M9 15v3m0-3H6m3 0l-3 3m9-3v3m0-3h3m-3 0l3 3"/>
+            </svg>
+            <span id="focus-btn-label">Focus</span>
+          </button>
+
+          <button class="btn-add-patient" id="btn-open-add-patient">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span>Add Patient</span>
+          </button>
+
+          <div class="user-profile">
+            <div class="user-avatar">SS</div>
+            <div class="user-info">
+              <span class="user-name">Sahil Singh</span>
+              <span class="user-role">Super Admin</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- 2. HORIZONTAL NAVIGATION TABS -->
+      <nav class="subnav-bar">
+        <button class="nav-tab" data-view="appointments-tab">
+          <span>Appointments</span>
+          <span class="tab-badge" id="tab-badge-appointments">38</span>
+        </button>
+
+        <button class="nav-tab" data-view="available-slots">
+          <span>Available Slots</span>
+          <span class="tab-badge">24</span>
+        </button>
+
+        <button class="nav-tab active" data-view="availability-calendar">
+          <span>Availability Calendar</span>
+          <span class="tab-badge active-tab-pill">Sheet View</span>
+        </button>
+
+        <button class="nav-tab" data-view="live-doctor-status">
+          <span>Live Doctor Status</span>
+          <span class="tab-badge status-live-pill">12 Active</span>
+        </button>
+
+        <button class="nav-tab" data-view="live-service-status">
+          <span>Live Service Status</span>
+          <span class="tab-badge">16 Pods</span>
+        </button>
+      </nav>
+
+      <!-- 3. DATE NAVIGATION & STATUS LEGEND BAR -->
+      <section class="controls-bar">
+        <div class="date-controls">
+          <button class="date-btn" id="btn-date-prev" title="Previous Day">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+          
+          <div class="date-display-box" id="date-display-text">
+            <span>Wednesday</span>
+            <span class="date-tag-bubble">02-09-2026</span>
+          </div>
+
+          <button class="date-btn" id="btn-date-next" title="Next Day">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+          <button class="date-today-btn" id="btn-date-today">Today</button>
+        </div>
+
+        <!-- Status Legend -->
+        <div class="status-legend">
+          <div class="legend-item"><span class="legend-box available"></span> Available</div>
+          <div class="legend-item"><span class="legend-box booked"></span> Booked</div>
+          <div class="legend-item"><span class="legend-box ready"></span> Ready</div>
+          <div class="legend-item"><span class="legend-box inprogress"></span> In Progress</div>
+          <div class="legend-item"><span class="legend-box break"></span> Break</div>
+          <div class="legend-item"><span class="legend-box cancelled"></span> Cancelled</div>
+          <div class="legend-item"><span class="legend-box absent"></span> Absent</div>
+        </div>
+      </section>
+
+      <!-- 4. SERVICE FILTER BAR -->
+      <section class="service-filter-bar" id="service-filter-bar">
+        <!-- Injected via JavaScript -->
+      </section>
+
+      <!-- Focus Mode Exit Hint Bar (only visible in focus mode) -->
+      <div class="focus-exit-bar" id="focus-exit-bar">
+        <span class="focus-exit-label">
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2" style="vertical-align:-2px;margin-right:5px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 9V6m0 3H6m3 0l-3-3m9 3V6m0 3h3m-3 0l3-3M9 15v3m0-3H6m3 0l-3 3m9-3v3m0-3h3m-3 0l3 3"/>
+          </svg>
+          Focus Mode — Press <kbd>Esc</kbd> or click to exit
+        </span>
+        <button class="focus-exit-btn" id="btn-exit-focus">Exit Focus</button>
+      </div>
+
+      <!-- 5. GOOGLE SHEET APPOINTMENT BOARD WRAPPER -->
+      <section class="sheet-board-wrapper" id="sheet-view-wrapper">
+        <div id="sheet-grid-container"></div>
+      </section>
+
+      <!-- ALTERNATIVE TAB VIEWS (Hidden by default, shown only when tab selected) -->
+      <section class="tab-content-container" id="view-live-doctor-status">
+        <div class="view-header-title">
+          <h2>Live Doctor Occupancy & Real-Time Availability</h2>
+          <span class="view-subtitle">Real-time room occupancy, active patient sessions and continuous free windows</span>
+        </div>
+        <div class="doctor-cards-grid" id="live-doctor-status-grid"></div>
+      </section>
+
+      <section class="tab-content-container" id="view-live-service-status">
+        <div class="view-header-title">
+          <h2>Treatment Pods & Equipment Utilization Matrix</h2>
+          <span class="view-subtitle">Live utilization and capacity across specialized therapy rooms and suites</span>
+        </div>
+        <div class="doctor-cards-grid" id="live-service-status-grid"></div>
+      </section>
+
+      <section class="tab-content-container" id="view-appointments-tab">
+        <div class="view-header-title">
+          <h2>Daily Appointment Roster Table</h2>
+          <span class="view-subtitle">Chronological list of all daily bookings and clinical sessions</span>
+        </div>
+        <div class="roster-table-wrapper">
+          <table class="roster-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Patient Name</th>
+                <th>Treatment Service</th>
+                <th>Assigned Doctor</th>
+                <th>Scheduled Time</th>
+                <th>Status</th>
+                <th>Clinical Notes</th>
+              </tr>
+            </thead>
+            <tbody id="appointments-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="tab-content-container" id="view-available-slots">
+        <div class="view-header-title">
+          <h2>Smart Available Slot Finder</h2>
+          <span class="view-subtitle">Find next open gaps across all specialist doctors</span>
+        </div>
+        <div id="available-slots-container"></div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- QUICK BOOKING SLIDING SIDE DRAWER -->
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <aside class="quick-booking-drawer" id="quick-booking-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title-wrap">
+        <span class="drawer-subtitle">Instant Scheduling</span>
+        <h2 class="drawer-title">Quick Book Appointment</h2>
+      </div>
+      <button class="btn-drawer-close" id="btn-close-booking-drawer" title="Close Drawer">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <form class="drawer-body" id="quick-booking-form">
+      <!-- Selected Slot Summary Card -->
+      <div class="slot-summary-card" id="drawer-slot-summary"></div>
+
+      <!-- Patient Search & Autocomplete -->
+      <div class="form-group">
+        <label class="form-label" for="booking-patient-search">
+          <span>Search Patient</span>
+          <span class="form-label-hint">Autocomplete</span>
+        </label>
+        <div class="form-input-with-icon">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="input-icon">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input type="text" id="booking-patient-search" class="form-input has-icon" placeholder="Type patient name or mobile number..." autocomplete="off">
+        </div>
+        <div id="booking-autocomplete-list" class="patient-autocomplete-list"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="booking-patient-name">Patient Full Name *</label>
+        <input type="text" id="booking-patient-name" class="form-input" placeholder="e.g. RAJESH MEHTA" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Active Package / Sessions</label>
+        <div id="booking-package-info" class="package-status-badge">
+          Auto-detect on patient select
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="booking-doctor-select">Assigned Doctor *</label>
+        <select id="booking-doctor-select" class="form-select" required></select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="booking-service-select">Treatment Service *</label>
+        <select id="booking-service-select" class="form-select" required></select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="booking-time-select">Appointment Time Slot *</label>
+        <select id="booking-time-select" class="form-select" required></select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="booking-notes">Clinical Notes / Special Requests</label>
+        <textarea id="booking-notes" class="form-textarea" placeholder="e.g. Needs dry needling, wheelchair assistance, invoice required..."></textarea>
+      </div>
+
+      <div class="drawer-footer">
+        <button type="button" class="btn-secondary" id="btn-cancel-booking">Cancel</button>
+        <button type="submit" class="btn-primary" id="btn-confirm-booking">Confirm Booking</button>
+      </div>
+    </form>
+  </aside>
+
+  <!-- APPOINTMENT DETAIL & ACTION MODAL -->
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="action-modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Appointment Details & Actions</h3>
+        <button class="btn-drawer-close" id="btn-close-action-modal">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="modal-patient-hero">
+          <div>
+            <div class="modal-patient-name" id="modal-patient-name-display">-</div>
+            <div class="modal-patient-phone" id="modal-patient-meta-display">-</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 12px; font-weight: 700; color: #2563eb;" id="modal-apt-service-display">-</div>
+            <div style="font-size: 11px; color: #64748b;" id="modal-apt-doctor-display">-</div>
+          </div>
+        </div>
+
+        <div class="modal-time-meta-card">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <span style="color: #64748b;">Scheduled Slot:</span>
+            <strong id="modal-apt-time-display" style="font-family: var(--font-mono);">-</strong>
+          </div>
+          <div>
+            <span style="color: #64748b;">Clinical Notes:</span>
+            <span id="modal-apt-notes-display" style="font-style: italic;">-</span>
+          </div>
+        </div>
+
+        <!-- Quick Status Changer -->
+        <div>
+          <label class="form-label" style="margin-bottom: 8px;">Update Patient Status:</label>
+          <div class="status-changer-row">
+            <button class="status-pill-btn ready modal-status-pill" data-status="ready">
+              <span class="status-dot green"></span> Ready
+            </button>
+            <button class="status-pill-btn inprogress modal-status-pill" data-status="in_progress">
+              <span class="status-dot orange"></span> In Progress
+            </button>
+            <button class="status-pill-btn completed modal-status-pill" data-status="completed">
+              <span class="status-dot gray"></span> Completed
+            </button>
+            <button class="status-pill-btn cancelled modal-status-pill" data-status="cancelled">
+              <span class="status-dot red"></span> Cancelled
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Grid -->
+        <div class="modal-action-buttons">
+          <button class="action-card-btn" id="btn-action-reschedule">
+            <div class="action-icon-box">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="action-btn-title">Reschedule Time</div>
+              <div class="action-btn-sub">Change slot or duration</div>
+            </div>
+          </button>
+
+          <button class="action-card-btn" id="btn-action-cancel-apt">
+            <div class="action-icon-box danger">
+              <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            </div>
+            <div>
+              <div class="action-btn-title">Cancel Booking</div>
+              <div class="action-btn-sub">Release doctor slot</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- + ADD PATIENT MODAL -->
+  <div class="modal-backdrop" id="add-patient-backdrop">
+    <div class="action-modal" style="width: 440px;">
+      <div class="modal-header">
+        <h3 class="modal-title">+ Add New Patient</h3>
+        <button class="btn-drawer-close" id="btn-close-add-patient">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <form class="modal-body" id="add-patient-form">
+        <div class="form-group">
+          <label class="form-label" for="new-patient-name">Patient Full Name *</label>
+          <input type="text" id="new-patient-name" class="form-input" placeholder="e.g. KAVITA SHARMA" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="new-patient-mobile">Mobile Number *</label>
+          <input type="tel" id="new-patient-mobile" class="form-input" placeholder="e.g. 9820123456" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="new-patient-package">Assigned Package *</label>
+          <select id="new-patient-package" class="form-select">
+            <option value="AMSK 10 Sessions">AMSK 10 Sessions</option>
+            <option value="Spine Decompression 12">Spine Decompression 12 Sessions</option>
+            <option value="THOR Laser 10">THOR Laser 10 Sessions</option>
+            <option value="HBOT + AMSK Combo 10">HBOT + AMSK Combo 10 Sessions</option>
+            <option value="Single Consultation">Single Consultation</option>
+          </select>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+          <button type="submit" class="btn-primary" style="width: 100%;">Create & Add Patient</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/grid.js"></script>
+  <script src="js/drag-drop.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- Focus Mode Controller -->
+  <script>
+    (function() {
+      const btn = document.getElementById('btn-focus-mode');
+      const exitBtn = document.getElementById('btn-exit-focus');
+      const iconExpand = document.getElementById('focus-icon-expand');
+      const iconCompress = document.getElementById('focus-icon-compress');
+      const label = document.getElementById('focus-btn-label');
+      const body = document.body;
+
+      function enterFocus() {
+        body.classList.add('focus-mode');
+        iconExpand.style.display = 'none';
+        iconCompress.style.display = '';
+        label.textContent = 'Exit';
+      }
+
+      function exitFocus() {
+        body.classList.remove('focus-mode');
+        iconExpand.style.display = '';
+        iconCompress.style.display = 'none';
+        label.textContent = 'Focus';
+      }
+
+      btn.addEventListener('click', () => {
+        body.classList.contains('focus-mode') ? exitFocus() : enterFocus();
+      });
+
+      exitBtn.addEventListener('click', exitFocus);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && body.classList.contains('focus-mode')) exitFocus();
+      });
+    })();
+  </script>
+
+</body>
+</html>
