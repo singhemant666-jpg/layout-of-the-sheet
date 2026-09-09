@@ -1258,7 +1258,7 @@ html, body {
   padding: 4px 10px;
   border-radius: var(--radius-sm);
   background-color: #f0fdf4;
-  border: 1.5px solid #bbf7d0;
+  border: 1.5px solid #4ade80;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1319,7 +1319,7 @@ html, body {
   justify-content: space-between;
   align-items: stretch;
   background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-  border: 2px dashed #4ade80;
+  border: 1.5px solid #4ade80;
   border-radius: var(--radius-sm);
   box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.15);
   transition: all var(--transition-fast);

@@ -493,7 +493,6 @@ class AppointmentGridRenderer {
                    title="Click to book ${doc.name} for 1 Hour (${slotDurationLabel})">
                 <div class="avail-1hr-header">
                   <div class="avail-1hr-status">
-                    <span class="avail-line"></span>
                     <span class="avail-1hr-title">Available (1 Hour)</span>
                   </div>
                   <span class="avail-1hr-time-badge">${slotDurationLabel}</span>
@@ -514,10 +513,7 @@ class AppointmentGridRenderer {
                    data-time-start="${slot.start}"
                    data-time-end="${slot.end}"
                    title="Click to book ${doc.name} at ${slot.label}">
-                <div class="avail-label-box">
-                  <span class="avail-line"></span>
-                  <span class="avail-label">Available</span>
-                </div>
+                <span class="avail-label">Available</span>
                 <span class="avail-action-chip">+ Book</span>
               </div>
             `;
