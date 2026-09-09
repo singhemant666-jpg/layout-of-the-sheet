@@ -76,11 +76,31 @@ class AppointmentGridRenderer {
       };
       filteredDoctors = data.doctors;
       activeSlots = data.halfHourTimeSlots;
-    } else if (this.activeFilter === "AMSK") {
-      targetService = data.services.find(s => s.id === "AMSK") || data.services[0];
+    } else if (this.activeFilter === "CAT_MSK" || this.activeFilter === "CAT_AMSK" || this.activeFilter === "AMSK") {
+      targetService = data.services.find(s => s.id === "AMSK") || { name: "Advanced MSK", shortName: "Advanced MSK", durationLabel: "1 Hour Slots" };
       const amskDocIds = ['doc-vidisha', 'doc-diwakar', 'doc-krishna', 'doc-hardi', 'doc-spoorthi'];
       filteredDoctors = data.doctors.filter(d => amskDocIds.includes(d.id));
       activeSlots = data.amskTimeSlots;
+    } else if (this.activeFilter === "CAT_MODALITIES") {
+      targetService = {
+        id: "CAT_MODALITIES",
+        name: "Modalities & Machines",
+        shortName: "Modalities & Machines",
+        durationLabel: "30 Min Slots"
+      };
+      const modDocIds = ['doc-saurambika', 'doc-sakshi-b', 'doc-anjali-k', 'doc-shifa', 'doc-daniya', 'doc-ankita', 'doc-sakshi-s', 'doc-spine-d'];
+      filteredDoctors = data.doctors.filter(d => modDocIds.includes(d.id));
+      activeSlots = data.halfHourTimeSlots;
+    } else if (this.activeFilter === "CAT_WELLNESS") {
+      targetService = {
+        id: "CAT_WELLNESS",
+        name: "Wellness & Recovery",
+        shortName: "Wellness & Recovery",
+        durationLabel: "Dedicated Machine Slots"
+      };
+      const wellnessDocIds = ['doc-hbot-hard', 'doc-hbot-soft', 'doc-red-light', 'doc-foot-insoles'];
+      filteredDoctors = data.doctors.filter(d => wellnessDocIds.includes(d.id));
+      activeSlots = data.halfHourTimeSlots;
     } else if (this.activeFilter === "THOR") {
       targetService = data.services.find(s => s.id === "THOR") || data.services[2];
       const thorDocIds = ['doc-shifa', 'doc-ankita', 'doc-sakshi-b', 'doc-daniya', 'doc-sakshi-s'];
@@ -88,8 +108,24 @@ class AppointmentGridRenderer {
       activeSlots = data.halfHourTimeSlots;
     } else if (this.activeFilter === "DTT") {
       targetService = data.services.find(s => s.id === "DTT") || data.services[1];
-      const dttDocIds = ['doc-saurambika', 'doc-sakshi-b', 'doc-daniya', 'doc-anjali-k', 'doc-rati'];
+      const dttDocIds = ['doc-saurambika', 'doc-sakshi-b', 'doc-daniya', 'doc-anjali-k'];
       filteredDoctors = data.doctors.filter(d => dttDocIds.includes(d.id));
+      activeSlots = data.halfHourTimeSlots;
+    } else if (this.activeFilter === "HBOT_HARD") {
+      targetService = data.services.find(s => s.id === "HBOT_HARD");
+      filteredDoctors = data.doctors.filter(d => d.id === 'doc-hbot-hard');
+      activeSlots = data.amskTimeSlots;
+    } else if (this.activeFilter === "HBOT_SOFT") {
+      targetService = data.services.find(s => s.id === "HBOT_SOFT");
+      filteredDoctors = data.doctors.filter(d => d.id === 'doc-hbot-soft');
+      activeSlots = data.amskTimeSlots;
+    } else if (this.activeFilter === "RED_LIGHT") {
+      targetService = data.services.find(s => s.id === "RED_LIGHT");
+      filteredDoctors = data.doctors.filter(d => d.id === 'doc-red-light');
+      activeSlots = data.halfHourTimeSlots;
+    } else if (this.activeFilter === "RED_FOOT_INSOLES") {
+      targetService = data.services.find(s => s.id === "RED_FOOT_INSOLES");
+      filteredDoctors = data.doctors.filter(d => d.id === 'doc-foot-insoles');
       activeSlots = data.halfHourTimeSlots;
     } else {
       targetService = data.services.find(s => s.id === this.activeFilter) || data.services[0];
@@ -99,6 +135,7 @@ class AppointmentGridRenderer {
       }
       activeSlots = data.halfHourTimeSlots;
     }
+
 
     // Overall clinic capacity metrics
     const totalServiceBookings = data.appointments.filter(a => (isAll || a.service === targetService.id) && a.status !== 'cancelled').length;

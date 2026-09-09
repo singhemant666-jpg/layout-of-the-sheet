@@ -44,36 +44,72 @@ class MPCApplication {
     this.renderAvailableSlotsView();
   }
 
-  // Render Horizontal Service Filters
+  // Render Horizontal Category Group Filters
   renderServiceFilters() {
     const container = document.getElementById('service-filter-bar');
     if (!container) return;
 
-    let html = `
-      <div class="filter-pill active" data-service-id="ALL">
-        <span>All Services</span>
-        <span class="pill-count">${CLINIC_DATA.appointments.length}</span>
-      </div>
-    `;
+    const apts = CLINIC_DATA.appointments;
 
-    CLINIC_DATA.services.forEach(svc => {
-      const count = CLINIC_DATA.appointments.filter(a => a.service === svc.id).length;
+    // Category definitions
+    const categories = [
+      {
+        id: 'ALL',
+        label: 'All Services',
+        icon: '⊞',
+        serviceIds: null, // null = all
+        accent: '#2563eb'
+      },
+      {
+        id: 'CAT_AMSK',
+        label: 'Advanced MSK',
+        icon: '🦴',
+        serviceIds: ['AMSK', 'BMSK'],
+        accent: '#1155cc'
+      },
+      {
+        id: 'CAT_MODALITIES',
+        label: 'Modalities & Machines',
+        icon: '⚡',
+        serviceIds: ['DTT', 'ACW', 'THOR', 'MAGNETO', 'RBA', 'HIL', 'FOCUSED_SW', 'SPINE_D', 'PELVIC_CHAIR', 'CONSULTATION'],
+        accent: '#7c3aed'
+      },
+      {
+        id: 'CAT_WELLNESS',
+        label: 'Wellness & Recovery',
+        icon: '🫧',
+        serviceIds: ['HBOT_HARD', 'HBOT_SOFT', 'RED_LIGHT', 'RED_FOOT_INSOLES', 'ICE_BATH', 'CRYOTHERAPY'],
+        accent: '#0891b2'
+      }
+    ];
+
+    let html = '';
+    categories.forEach(cat => {
+      const count = cat.serviceIds === null
+        ? apts.length
+        : apts.filter(a => cat.serviceIds.includes(a.service)).length;
+
       html += `
-        <div class="filter-pill" data-service-id="${svc.id}">
-          <span>${svc.name}</span>
-          ${count > 0 ? `<span class="pill-count">${count}</span>` : ''}
+        <div class="cat-filter-tab" data-service-id="${cat.id}" style="--cat-accent: ${cat.accent}">
+          <span class="cat-tab-icon">${cat.icon}</span>
+          <span class="cat-tab-label">${cat.label}</span>
+          <span class="cat-tab-count">${count}</span>
         </div>
       `;
     });
 
     container.innerHTML = html;
 
+    // Set first tab active
+    const first = container.querySelector('.cat-filter-tab');
+    if (first) first.classList.add('active');
+
     // Attach click events
-    container.querySelectorAll('.filter-pill').forEach(pill => {
-      pill.addEventListener('click', () => {
-        container.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
-        const svcId = pill.getAttribute('data-service-id');
+    container.querySelectorAll('.cat-filter-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        container.querySelectorAll('.cat-filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const svcId = tab.getAttribute('data-service-id');
         this.gridRenderer.setFilter(svcId);
       });
     });
