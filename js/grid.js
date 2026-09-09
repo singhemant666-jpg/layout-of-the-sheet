@@ -483,17 +483,45 @@ class AppointmentGridRenderer {
           const end12 = this.formatTime12(is1HrAvailMerged ? availEnd : slot.end);
           const slotDurationLabel = is1HrAvailMerged ? `${start12} – ${end12}` : slot.label;
           
-          html += `
-            <div class="infographic-available-card${is1HrAvailMerged ? ' avail-1hr-card' : ''}" 
-                 data-doctor-id="${doc.id}" 
-                 data-service-id="${doc.supportedServices[0] || 'AMSK'}"
-                 data-time-start="${slot.start}"
-                 data-time-end="${is1HrAvailMerged ? availEnd : slot.end}"
-                 title="Click to book ${doc.name} at ${slotDurationLabel}">
-              <span class="avail-label">🟢 Available${is1HrAvailMerged ? ' (1 Hour)' : ''}</span>
-              <span class="avail-action-chip">+ Book</span>
-            </div>
-          `;
+          if (is1HrAvailMerged) {
+            html += `
+              <div class="infographic-available-card avail-1hr-card" 
+                   data-doctor-id="${doc.id}" 
+                   data-service-id="${doc.supportedServices[0] || 'AMSK'}"
+                   data-time-start="${slot.start}"
+                   data-time-end="${availEnd}"
+                   title="Click to book ${doc.name} for 1 Hour (${slotDurationLabel})">
+                <div class="avail-1hr-header">
+                  <div class="avail-1hr-status">
+                    <span class="avail-line"></span>
+                    <span class="avail-1hr-title">Available (1 Hour)</span>
+                  </div>
+                  <span class="avail-1hr-time-badge">${slotDurationLabel}</span>
+                </div>
+                <div class="avail-1hr-sub-info">
+                  <span>⚡ 60-Minute Session</span>
+                </div>
+                <div class="avail-1hr-footer">
+                  <span class="avail-action-chip btn-book-1hr">+ Book 1-Hour Session</span>
+                </div>
+              </div>
+            `;
+          } else {
+            html += `
+              <div class="infographic-available-card" 
+                   data-doctor-id="${doc.id}" 
+                   data-service-id="${doc.supportedServices[0] || 'AMSK'}"
+                   data-time-start="${slot.start}"
+                   data-time-end="${slot.end}"
+                   title="Click to book ${doc.name} at ${slot.label}">
+                <div class="avail-label-box">
+                  <span class="avail-line"></span>
+                  <span class="avail-label">Available</span>
+                </div>
+                <span class="avail-action-chip">+ Book</span>
+              </div>
+            `;
+          }
         }
 
         html += `</td>`;

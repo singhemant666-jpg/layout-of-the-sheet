@@ -1273,10 +1273,25 @@ html, body {
   transform: translateY(-1px);
 }
 
+.avail-label-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .avail-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   color: #16a34a;
+}
+
+.avail-line {
+  width: 3px;
+  height: 14px;
+  background-color: #16a34a;
+  border-radius: 2px;
+  flex-shrink: 0;
+  display: inline-block;
 }
 
 .avail-action-chip {
@@ -1292,6 +1307,100 @@ html, body {
 
 .infographic-available-card:hover .avail-action-chip {
   background: #1d4ed8;
+}
+
+/* 1-Hour Merged Available Card (Full Height & High-Craft Prominent UI) */
+.infographic-available-card.avail-1hr-card {
+  height: 114px;
+  min-height: 114px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 2px dashed #4ade80;
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.15);
+  transition: all var(--transition-fast);
+}
+
+.infographic-available-card.avail-1hr-card:hover {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  border-color: #16a34a;
+  border-style: solid;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.2);
+  transform: translateY(-1px);
+}
+
+.avail-1hr-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.avail-1hr-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.avail-1hr-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #15803d;
+  letter-spacing: -0.1px;
+}
+
+.avail-1hr-time-badge {
+  font-size: 10.5px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  background: #ffffff;
+  color: #166534;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid #86efac;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.avail-1hr-sub-info {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #166534;
+  opacity: 0.9;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 2px 0;
+}
+
+.avail-1hr-footer {
+  display: flex;
+  width: 100%;
+}
+
+.avail-action-chip.btn-book-1hr {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: #ffffff;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(37, 99, 235, 0.25);
+  transition: all var(--transition-fast);
+}
+
+.infographic-available-card.avail-1hr-card:hover .btn-book-1hr {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  box-shadow: 0 3px 8px rgba(29, 78, 216, 0.35);
+  transform: translateY(-1px);
 }
 
 /* 8. Clinic Synchronized Lunch Break Divider */
