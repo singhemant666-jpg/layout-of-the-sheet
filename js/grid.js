@@ -89,7 +89,7 @@ class AppointmentGridRenderer {
         durationLabel: "30 Min Slots"
       };
       const modDocIds = ['doc-saurambika', 'doc-sakshi-b', 'doc-anjali-k', 'doc-shifa', 'doc-daniya', 'doc-ankita', 'doc-sakshi-s', 'doc-spine-d'];
-      filteredDoctors = data.doctors.filter(d => modDocIds.includes(d.id));
+      filteredDoctors = modDocIds.map(id => data.doctors.find(d => d.id === id)).filter(Boolean);
       activeSlots = data.halfHourTimeSlots;
     } else if (this.activeFilter === "CAT_WELLNESS") {
       targetService = {

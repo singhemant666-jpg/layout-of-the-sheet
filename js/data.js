@@ -207,23 +207,6 @@ const CLINIC_DATA = {
       totalToday: 7
     },
     {
-      id: "doc-spine-d",
-      name: "Dr. Reena Patel",
-      specialty: "Spine Decompression Specialist",
-      floor: "Spine Decompression Suite",
-      avatar: "RP",
-      primaryService: "SPINE_D",
-      primaryServiceLabel: "Spine Decompression",
-      supportedServices: ["SPINE_D"],
-      workingHours: { start: "09:00", end: "18:00" },
-      lunchTime: { start: "13:30", end: "14:00" },
-      status: "available",
-      freeFor: "1 hr",
-      nextAppointment: "09:30 AM",
-      rating: "4.9",
-      totalToday: 5
-    },
-    {
       id: "doc-sakshi-s",
       name: "Dr. Sakshi Singh",
       specialty: "Class 4 Laser & RBA",
@@ -239,6 +222,23 @@ const CLINIC_DATA = {
       nextAppointment: "01:30 PM",
       rating: "4.9",
       totalToday: 8
+    },
+    {
+      id: "doc-spine-d",
+      name: "Dr. Reena Patel",
+      specialty: "Spine Decompression Specialist",
+      floor: "Spine Decompression Suite",
+      avatar: "RP",
+      primaryService: "SPINE_D",
+      primaryServiceLabel: "Spine Decompression",
+      supportedServices: ["SPINE_D"],
+      workingHours: { start: "09:00", end: "18:00" },
+      lunchTime: { start: "13:30", end: "14:00" },
+      status: "available",
+      freeFor: "1 hr",
+      nextAppointment: "09:30 AM",
+      rating: "4.9",
+      totalToday: 5
     },
     {
       id: "doc-hbot-hard",
