@@ -951,7 +951,7 @@ html, body {
 }
 
 .slot-time-primary {
-  font-size: 11.5px;
+  font-size: 14px;
   font-weight: 900;
   font-family: var(--font-mono);
   color: #1d4ed8 !important;
@@ -965,7 +965,7 @@ html, body {
 }
 
 .slot-time-secondary {
-  font-size: 10.5px;
+  font-size: 13px;
   font-weight: 700;
   font-family: var(--font-mono);
   color: #475569 !important;
