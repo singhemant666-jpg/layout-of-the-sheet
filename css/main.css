@@ -1167,7 +1167,8 @@ html, body {
 
 /* 6. Color-Coded Shift Start & End Blocks */
 .shift-block-card {
-  height: 54px;
+  height: 100%;
+  min-height: 54px;
   width: 100%;
   box-sizing: border-box;
   padding: 4px 8px;
@@ -1190,6 +1191,13 @@ html, body {
   color: #ffffff;
 }
 
+/* Merged tall shift block — badge centered vertically in full rowspan height */
+.shift-block-card.shift-merged-top {
+  border-radius: var(--radius-sm);
+  flex-direction: column;
+  gap: 6px;
+}
+
 .shift-badge-inner {
   display: flex;
   align-items: center;
@@ -1202,6 +1210,12 @@ html, body {
 
 .shift-icon {
   font-size: 11px;
+}
+
+/* Ensure the parent <td> stretches to fill the rowspan properly */
+.slot-matrix-cell {
+  vertical-align: middle;
+  padding: 4px;
 }
 
 /* 7. Infographic Available Slot Card (1-Click Instant Book) */

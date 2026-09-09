@@ -173,8 +173,75 @@ class AppointmentGridRenderer {
         <tbody>
     `;
 
+    // ------- Pre-compute shift-block rowspan skip maps -------
+    // For each doctor, find consecutive "before shift" slot indices and consecutive "after shift" slot indices.
+    // Store: skipMap[docId][slotIndex] = true  → means "skip this <td>, covered by a rowspan above"
+    //        spanMap[docId][slotIndex] = N      → means "emit this <td> with rowspan=N"
+
+    const shiftSkipMap   = {}; // slot indices to skip per doctor
+    const shiftSpanMap   = {}; // slot indices where we emit a rowspan cell per doctor
+
+    filteredDoctors.forEach(doc => {
+      shiftSkipMap[doc.id]  = {};
+      shiftSpanMap[doc.id]  = {};
+
+      const [dsh, dsm] = doc.workingHours.start.split(':').map(Number);
+      const [deh, dem] = doc.workingHours.end.split(':').map(Number);
+      const docStartMins = dsh * 60 + dsm;
+      const docEndMins   = deh * 60 + dem;
+
+      // --- Before-shift block ---
+      // Collect consecutive indices where slotMins < docStartMins
+      let runStart = -1;
+      let runLen   = 0;
+      activeSlots.forEach((s, idx) => {
+        const [sh, sm] = s.start.split(':').map(Number);
+        const slotMins = sh * 60 + sm;
+        if (slotMins < docStartMins) {
+          if (runStart === -1) runStart = idx;
+          runLen++;
+        } else {
+          if (runStart !== -1 && runLen > 1) {
+            shiftSpanMap[doc.id][runStart] = runLen;
+            for (let i = runStart + 1; i < runStart + runLen; i++) {
+              shiftSkipMap[doc.id][i] = true;
+            }
+          }
+          runStart = -1; runLen = 0;
+        }
+      });
+      // flush
+      if (runStart !== -1 && runLen > 1) {
+        shiftSpanMap[doc.id][runStart] = runLen;
+        for (let i = runStart + 1; i < runStart + runLen; i++) {
+          shiftSkipMap[doc.id][i] = true;
+        }
+      }
+
+      // --- After-shift block ---
+      runStart = -1; runLen = 0;
+      activeSlots.forEach((s, idx) => {
+        const [sh, sm] = s.start.split(':').map(Number);
+        const slotMins = sh * 60 + sm;
+        if (slotMins >= docEndMins) {
+          if (runStart === -1) runStart = idx;
+          runLen++;
+        } else {
+          runStart = -1; runLen = 0;
+        }
+      });
+      // flush (only the last run matters for shift-ended)
+      if (runStart !== -1 && runLen > 1) {
+        shiftSpanMap[doc.id][runStart] = runLen;
+        for (let i = runStart + 1; i < runStart + runLen; i++) {
+          shiftSkipMap[doc.id][i] = true;
+        }
+      }
+    });
+    // ----------------------------------------------------------
+
     // Time Slot Rows
-    activeSlots.forEach((slot) => {
+    activeSlots.forEach((slot, slotIdx) => {
       const isLunchRow = slot.start === "13:30";
 
       if (isLunchRow) {
@@ -226,6 +293,11 @@ class AppointmentGridRenderer {
         const docStartMins = docStartH * 60 + docStartM;
         const docEndMins = docEndH * 60 + docEndM;
 
+        // --- Shift-block skip: covered by a rowspan above ---
+        if (shiftSkipMap[doc.id][slotIdx]) {
+          return; // no <td> emitted
+        }
+
         // Check if doctor has an appointment starting at this slot
         const apt = data.appointments.find(a => 
           a.doctor === doc.id && 
@@ -266,10 +338,16 @@ class AppointmentGridRenderer {
           }
         }
 
+        // Shift-block rowspan for before/after shift merged cells
+        let shiftRowSpanAttr = "";
+        if (shiftSpanMap[doc.id][slotIdx]) {
+          shiftRowSpanAttr = ` rowspan="${shiftSpanMap[doc.id][slotIdx]}"`;
+        }
+
         const effectiveServiceId = apt ? apt.service : (doc.supportedServices[0] || "AMSK");
 
         html += `
-          <td class="sheet-cell slot-matrix-cell${isMerged1Hr ? ' merged-1hr-cell' : ''}"${rowSpanAttr}
+          <td class="sheet-cell slot-matrix-cell${isMerged1Hr ? ' merged-1hr-cell' : ''}"${rowSpanAttr}${!apt ? shiftRowSpanAttr : ""}
               data-doctor-id="${doc.id}" 
               data-service-id="${effectiveServiceId}"
               data-time-start="${slot.start}"
@@ -295,10 +373,11 @@ class AppointmentGridRenderer {
             </div>
           `;
         } else if (slotMins < docStartMins) {
-          // Shift Starts Later
+          // Shift Starts Later – merged block
           const startHour12 = this.formatTime12(doc.workingHours.start);
+          const isFirstOfRun = !!shiftSpanMap[doc.id][slotIdx];
           html += `
-            <div class="shift-block-card shift-starts-later" title="Dr. ${doc.name.split(' ')[1]}'s shift begins at ${startHour12}">
+            <div class="shift-block-card shift-starts-later${isFirstOfRun ? ' shift-merged-top' : ''}" title="Dr. ${doc.name.split(' ')[1]}'s shift begins at ${startHour12}">
               <div class="shift-badge-inner">
                 <span class="shift-icon">🔒</span>
                 <span class="shift-text">Starts ${startHour12}</span>
@@ -306,10 +385,11 @@ class AppointmentGridRenderer {
             </div>
           `;
         } else if (slotMins >= docEndMins) {
-          // Shift Ended
+          // Shift Ended – merged block
           const endHour12 = this.formatTime12(doc.workingHours.end);
+          const isFirstOfRun = !!shiftSpanMap[doc.id][slotIdx];
           html += `
-            <div class="shift-block-card shift-ended" title="Dr. ${doc.name.split(' ')[1]}'s shift ended at ${endHour12}">
+            <div class="shift-block-card shift-ended${isFirstOfRun ? ' shift-merged-top' : ''}" title="Dr. ${doc.name.split(' ')[1]}'s shift ended at ${endHour12}">
               <div class="shift-badge-inner">
                 <span class="shift-icon">🌙</span>
                 <span class="shift-text">Shift Ended</span>
