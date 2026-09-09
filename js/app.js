@@ -78,7 +78,7 @@ class MPCApplication {
         id: 'CAT_WELLNESS',
         label: 'Wellness & Recovery',
         icon: '🫧',
-        serviceIds: ['HBOT_HARD', 'HBOT_SOFT', 'RED_LIGHT', 'RED_FOOT_INSOLES', 'ICE_BATH', 'CRYOTHERAPY'],
+        serviceIds: ['HBOT_HARD', 'HBOT_SOFT', 'RED_LIGHT', 'RED_FOOT_INSOLES', 'PELVIC_CHAIR', 'ICE_BATH', 'CRYOTHERAPY'],
         accent: '#0891b2'
       }
     ];

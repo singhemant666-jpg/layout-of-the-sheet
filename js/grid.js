@@ -98,7 +98,7 @@ class AppointmentGridRenderer {
         shortName: "Wellness & Recovery",
         durationLabel: "Dedicated Machine Slots"
       };
-      const wellnessDocIds = ['doc-hbot-hard', 'doc-hbot-soft', 'doc-red-light', 'doc-foot-insoles'];
+      const wellnessDocIds = ['doc-hbot-hard', 'doc-hbot-soft', 'doc-red-light', 'doc-foot-insoles', 'doc-pelvic-chair'];
       filteredDoctors = data.doctors.filter(d => wellnessDocIds.includes(d.id));
       activeSlots = data.halfHourTimeSlots;
     } else if (this.activeFilter === "THOR") {
@@ -339,7 +339,6 @@ class AppointmentGridRenderer {
         const apt = data.appointments.find(a => 
           a.doctor === doc.id && 
           a.status !== 'cancelled' && 
-          (isAll || a.service === targetService.id) &&
           a.startTime === slot.start
         );
 
@@ -347,7 +346,6 @@ class AppointmentGridRenderer {
         if (!apt) {
           const priorApt = data.appointments.find(a => {
             if (a.doctor !== doc.id || a.status === 'cancelled') return false;
-            if (!isAll && a.service !== targetService.id) return false;
             const [ash, asm] = a.startTime.split(':').map(Number);
             const [aeh, aem] = a.endTime.split(':').map(Number);
             const aStartM = ash * 60 + asm;
@@ -355,16 +353,59 @@ class AppointmentGridRenderer {
             return slotMins > aStartM && slotMins < aEndM;
           });
 
-          if (priorApt && isAll) {
+          if (priorApt) {
             // Already spanned by the prior appointment's rowspan="2". Do not output <td>.
             return;
+          }
+        }
+
+        // Determine if this doctor / service is a 1-hour session service
+        const primarySvcId = doc.primaryService;
+        const svcDef = data.services.find(s => s.id === primarySvcId);
+        const is1HrDocService = svcDef ? svcDef.durationMinutes >= 60 : (primarySvcId === 'HBOT_HARD' || primarySvcId === 'HBOT_SOFT' || primarySvcId === 'AMSK');
+
+        // For 1-hour services without appointment: check if covered by previous 1-hour available slot or should span 2 rows
+        let is1HrAvailMerged = false;
+        let availEnd = slot.end;
+
+        if (!apt && is1HrDocService && activeSlots.length > 12) {
+          const [sh, sm] = slot.start.split(':').map(Number);
+          
+          // If starting at an odd half-hour (e.g. 09:30, 10:30, 11:30, 14:30), check if previous :00 had no appointment
+          if (sm === 30 && slotMins >= docStartMins && slotMins < docEndMins) {
+            const prevStartMins = slotMins - 30;
+            const prevH = Math.floor(prevStartMins / 60);
+            const prevM = prevStartMins % 60;
+            const prevStartStr = `${prevH.toString().padStart(2, '0')}:${prevM.toString().padStart(2, '0')}`;
+            
+            const prevApt = data.appointments.find(a => a.doctor === doc.id && a.status !== 'cancelled' && a.startTime === prevStartStr);
+            if (!prevApt) {
+              // Covered by the 1-hour available slot emitted at :00 above! Skip this <td>.
+              return;
+            }
+          }
+
+          // If starting at an even hour (e.g. 09:00, 10:00, 11:00, 14:00), merge next 30m slot if available
+          if (sm === 0 && slotMins >= docStartMins && (slotMins + 60) <= docEndMins) {
+            const nextStartMins = slotMins + 30;
+            const nextH = Math.floor(nextStartMins / 60);
+            const nextM = nextStartMins % 60;
+            const nextStartStr = `${nextH.toString().padStart(2, '0')}:${nextM.toString().padStart(2, '0')}`;
+            
+            const nextApt = data.appointments.find(a => a.doctor === doc.id && a.status !== 'cancelled' && a.startTime === nextStartStr);
+            if (!nextApt) {
+              is1HrAvailMerged = true;
+              const endH = Math.floor((slotMins + 60) / 60);
+              const endM = (slotMins + 60) % 60;
+              availEnd = `${endH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`;
+            }
           }
         }
 
         // Calculate rowspan for appointments lasting longer than 30 minutes in half-hour view
         let rowSpanAttr = "";
         let isMerged1Hr = false;
-        if (apt && isAll) {
+        if (apt) {
           const [ash, asm] = apt.startTime.split(':').map(Number);
           const [aeh, aem] = apt.endTime.split(':').map(Number);
           const durationMins = (aeh * 60 + aem) - (ash * 60 + asm);
@@ -373,6 +414,9 @@ class AppointmentGridRenderer {
             rowSpanAttr = ` rowspan="${spans}"`;
             isMerged1Hr = true;
           }
+        } else if (is1HrAvailMerged) {
+          rowSpanAttr = ` rowspan="2"`;
+          isMerged1Hr = true;
         }
 
         // Shift-block rowspan for before/after shift merged cells
@@ -384,11 +428,11 @@ class AppointmentGridRenderer {
         const effectiveServiceId = apt ? apt.service : (doc.supportedServices[0] || "AMSK");
 
         html += `
-          <td class="sheet-cell slot-matrix-cell${isMerged1Hr ? ' merged-1hr-cell' : ''}"${rowSpanAttr}${!apt ? shiftRowSpanAttr : ""}
+          <td class="sheet-cell slot-matrix-cell${isMerged1Hr ? ' merged-1hr-cell' : ''}"${rowSpanAttr}${!apt && !is1HrAvailMerged ? shiftRowSpanAttr : ""}
               data-doctor-id="${doc.id}" 
               data-service-id="${effectiveServiceId}"
               data-time-start="${slot.start}"
-              data-time-end="${slot.end}">
+              data-time-end="${is1HrAvailMerged ? availEnd : slot.end}">
         `;
 
         if (apt) {
@@ -435,14 +479,18 @@ class AppointmentGridRenderer {
           `;
         } else {
           // Clean 1-Click Booking Slot Card
+          const start12 = this.formatTime12(slot.start);
+          const end12 = this.formatTime12(is1HrAvailMerged ? availEnd : slot.end);
+          const slotDurationLabel = is1HrAvailMerged ? `${start12} – ${end12}` : slot.label;
+          
           html += `
-            <div class="infographic-available-card" 
+            <div class="infographic-available-card${is1HrAvailMerged ? ' avail-1hr-card' : ''}" 
                  data-doctor-id="${doc.id}" 
                  data-service-id="${doc.supportedServices[0] || 'AMSK'}"
                  data-time-start="${slot.start}"
-                 data-time-end="${slot.end}"
-                 title="Click to book ${doc.name} at ${slot.label}">
-              <span class="avail-label">🟢 Available</span>
+                 data-time-end="${is1HrAvailMerged ? availEnd : slot.end}"
+                 title="Click to book ${doc.name} at ${slotDurationLabel}">
+              <span class="avail-label">🟢 Available${is1HrAvailMerged ? ' (1 Hour)' : ''}</span>
               <span class="avail-action-chip">+ Book</span>
             </div>
           `;

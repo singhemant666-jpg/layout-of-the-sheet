@@ -307,6 +307,23 @@ const CLINIC_DATA = {
       nextAppointment: "10:30 AM",
       rating: "4.9",
       totalToday: 4
+    },
+    {
+      id: "doc-pelvic-chair",
+      name: "Dr. Anjali Dalwadi",
+      specialty: "Pelvic Chair Specialist",
+      floor: "Wellness Suite",
+      avatar: "AD",
+      primaryService: "PELVIC_CHAIR",
+      primaryServiceLabel: "Pelvic Chair",
+      supportedServices: ["PELVIC_CHAIR"],
+      workingHours: { start: "09:00", end: "18:00" },
+      lunchTime: { start: "13:30", end: "14:00" },
+      status: "available",
+      freeFor: "30 min",
+      nextAppointment: "11:00 AM",
+      rating: "4.9",
+      totalToday: 5
     }
   ],
 
@@ -2389,6 +2406,35 @@ const CLINIC_DATA = {
       notes: "Sciatica — computerized lumbar traction",
       packageRemaining: "4 of 8 sessions",
       phone: "+91 98201 11335"
+    },
+    // --- Pelvic Chair (doc-pelvic-chair) ---
+    {
+      id: "apt-1901",
+      patientId: "p-015",
+      patientName: "BINITA PAREKH",
+      doctor: "doc-pelvic-chair",
+      service: "PELVIC_CHAIR",
+      startTime: "11:00",
+      endTime: "11:30",
+      timeLabel: "11:00 AM – 11:30 AM",
+      status: "ready",
+      notes: "HIFEM pelvic floor conditioning session",
+      packageRemaining: "5 of 10 sessions",
+      phone: "+91 98208 77665"
+    },
+    {
+      id: "apt-1902",
+      patientId: "p-006",
+      patientName: "SHEETAL SHAH",
+      doctor: "doc-pelvic-chair",
+      service: "PELVIC_CHAIR",
+      startTime: "14:30",
+      endTime: "15:00",
+      timeLabel: "2:30 PM – 3:00 PM",
+      status: "booked",
+      notes: "Pelvic floor muscle strengthening & posture alignment",
+      packageRemaining: "3 of 8 sessions",
+      phone: "+91 99200 44321"
     }
   ],
 
