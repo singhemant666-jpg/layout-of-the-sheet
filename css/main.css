@@ -1002,6 +1002,33 @@ html, body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
 }
 
+/* Merged 1-Hour Appointment Cell & Card */
+.slot-matrix-cell.merged-1hr-cell {
+  height: 124px;
+  vertical-align: middle;
+  padding: 4px 6px !important;
+}
+
+.infographic-apt-card.merged-1hr-card {
+  height: 116px;
+  min-height: 116px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 8px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.apt-patient-name.merged-patient-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  line-height: 1.35;
+  margin-top: 4px;
+}
+
 .in-session-span-box {
   height: 54px;
   width: 100%;

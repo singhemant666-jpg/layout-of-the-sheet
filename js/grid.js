@@ -235,9 +235,8 @@ class AppointmentGridRenderer {
         );
 
         // Check if this slot is occupied by a 1-hour appointment from the previous half-hour
-        let priorApt = null;
         if (!apt) {
-          priorApt = data.appointments.find(a => {
+          const priorApt = data.appointments.find(a => {
             if (a.doctor !== doc.id || a.status === 'cancelled') return false;
             if (!isAll && a.service !== targetService.id) return false;
             const [ash, asm] = a.startTime.split(':').map(Number);
@@ -246,12 +245,31 @@ class AppointmentGridRenderer {
             const aEndM = aeh * 60 + aem;
             return slotMins > aStartM && slotMins < aEndM;
           });
+
+          if (priorApt && isAll) {
+            // Already spanned by the prior appointment's rowspan="2". Do not output <td>.
+            return;
+          }
         }
 
-        const effectiveServiceId = apt ? apt.service : (priorApt ? priorApt.service : (doc.supportedServices[0] || "AMSK"));
+        // Calculate rowspan for appointments lasting longer than 30 minutes in half-hour view
+        let rowSpanAttr = "";
+        let isMerged1Hr = false;
+        if (apt && isAll) {
+          const [ash, asm] = apt.startTime.split(':').map(Number);
+          const [aeh, aem] = apt.endTime.split(':').map(Number);
+          const durationMins = (aeh * 60 + aem) - (ash * 60 + asm);
+          if (durationMins >= 60) {
+            const spans = Math.min(4, Math.round(durationMins / 30));
+            rowSpanAttr = ` rowspan="${spans}"`;
+            isMerged1Hr = true;
+          }
+        }
+
+        const effectiveServiceId = apt ? apt.service : (doc.supportedServices[0] || "AMSK");
 
         html += `
-          <td class="sheet-cell slot-matrix-cell" 
+          <td class="sheet-cell slot-matrix-cell${isMerged1Hr ? ' merged-1hr-cell' : ''}"${rowSpanAttr}
               data-doctor-id="${doc.id}" 
               data-service-id="${effectiveServiceId}"
               data-time-start="${slot.start}"
@@ -259,11 +277,11 @@ class AppointmentGridRenderer {
         `;
 
         if (apt) {
-          // Clean, Single-Instance Appointment Card (No duplicate tags, No session counts)
+          // Clean, Single-Instance Appointment Card (Truly Merged across both slots)
           const statusUpper = apt.status.toUpperCase().replace('_', ' ');
 
           html += `
-            <div class="infographic-apt-card status-${apt.status}" 
+            <div class="infographic-apt-card status-${apt.status}${isMerged1Hr ? ' merged-1hr-card' : ''}" 
                  draggable="true" 
                  data-appointment-id="${apt.id}"
                  data-doctor-id="${doc.id}"
@@ -273,16 +291,7 @@ class AppointmentGridRenderer {
                 <span class="apt-status-badge ${apt.status}">${statusUpper}</span>
                 <span class="apt-time-label">${apt.timeLabel || `${apt.startTime} – ${apt.endTime}`}</span>
               </div>
-              <div class="apt-patient-name">${apt.patientName}</div>
-            </div>
-          `;
-        } else if (priorApt) {
-          // Seamless occupied cell for 1-hour session continuation matching dynamic parent appointment color
-          html += `
-            <div class="in-session-span-box status-${priorApt.status}" 
-                 data-appointment-id="${priorApt.id}"
-                 title="${priorApt.patientName} (${priorApt.timeLabel}) • In Session">
-              <span class="in-session-merge-indicator">▾ In Session</span>
+              <div class="apt-patient-name${isMerged1Hr ? ' merged-patient-name' : ''}">${apt.patientName}</div>
             </div>
           `;
         } else if (slotMins < docStartMins) {
