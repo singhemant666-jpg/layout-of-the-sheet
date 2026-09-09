@@ -1,5 +1,5 @@
 // MPC Global - Drag & Drop Appointment Shifting Engine
-// Requires holding the ALT key to drag and shift appointments.
+// Hold ALT (Win/Linux) or ⌥ Option (Mac) to drag and shift appointments.
 
 class DragDropEngine {
   constructor() {
@@ -8,55 +8,67 @@ class DragDropEngine {
     this.sourceCell = null;
     this._bound = false;
     this.isAltPressed = false;
+    this._dropSuccess = false; // tracks if drop landed correctly (Mac workaround)
   }
 
-  // Called once after first render – uses delegation so no re-init needed
   init() {
-    if (this._bound) return; // Only bind once
+    if (this._bound) return;
     this._bound = true;
 
     const container = document.getElementById('sheet-grid-container');
     if (!container) return;
 
-    // ── ALT KEY LISTENER FOR VISUAL FEEDBACK ────────────────────────
+    // ── ALT / OPTION KEY TRACKING ────────────────────────────────────
+    // Mac: Option key fires as 'Alt'. Track it with a dedicated flag.
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Alt' || e.altKey) {
+      if (e.key === 'Alt') {
         this.isAltPressed = true;
         document.body.classList.add('alt-drag-mode');
       }
     });
 
     window.addEventListener('keyup', (e) => {
-      if (e.key === 'Alt' || !e.altKey) {
+      if (e.key === 'Alt') {
         this.isAltPressed = false;
         document.body.classList.remove('alt-drag-mode');
       }
     });
 
-    // Also clear when window loses focus
+    // Clear when tab loses focus (handles Mac Option-Tab edge case)
     window.addEventListener('blur', () => {
       this.isAltPressed = false;
       document.body.classList.remove('alt-drag-mode');
     });
 
-    // ── DRAG START (ONLY WITH ALT KEY) ──────────────────────────────
+    // ── DRAG START ───────────────────────────────────────────────────
     container.addEventListener('dragstart', (e) => {
       const card = e.target.closest('.infographic-apt-card');
       if (!card) return;
 
-      // STRICT: Must be holding the Alt key to drag
-      if (!e.altKey && !this.isAltPressed) {
+      // Mac: e.altKey is unreliable at dragstart — use our tracked flag
+      const altHeld = this.isAltPressed || e.altKey;
+
+      if (!altHeld) {
         e.preventDefault();
         return false;
       }
+
+      this._dropSuccess = false;
 
       this.draggedAptId = card.getAttribute('data-appointment-id');
       this.draggedAppointment = CLINIC_DATA.appointments.find(a => a.id === this.draggedAptId);
       this.sourceCell = card.closest('.slot-matrix-cell');
 
       card.classList.add('dragging');
+
+      // CRITICAL for Mac: must call setData() for drop to fire
       e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', this.draggedAptId);
+      try {
+        e.dataTransfer.setData('text/plain', this.draggedAptId);
+      } catch (err) {
+        // Safari fallback
+        e.dataTransfer.setData('Text', this.draggedAptId);
+      }
     });
 
     // ── DRAG END ────────────────────────────────────────────────────
@@ -64,6 +76,7 @@ class DragDropEngine {
       const card = e.target.closest('.infographic-apt-card');
       if (card) card.classList.remove('dragging');
       this.clearDropHighlights(container);
+      // If drop did NOT succeed (e.g. dropped outside), do nothing — data already unchanged
       this.draggedAptId = null;
       this.draggedAppointment = null;
       this.sourceCell = null;
@@ -75,13 +88,15 @@ class DragDropEngine {
       if (!zone || !this.draggedAppointment) return;
       if (zone === this.sourceCell) return;
 
+      // MUST call preventDefault() to allow drop
       e.preventDefault();
+      // MUST set dropEffect so Mac doesn't snap back
+      e.dataTransfer.dropEffect = 'move';
 
       const targetDocId = zone.getAttribute('data-doctor-id');
       const targetTimeStart = zone.getAttribute('data-time-start');
       const validation = this.validateShift(this.draggedAppointment, targetDocId, targetTimeStart);
 
-      // Only update class if changed (avoids flicker)
       const shouldBeValid = validation.valid;
       if (shouldBeValid && !zone.classList.contains('drag-over-valid')) {
         this.clearDropHighlights(container);
@@ -90,15 +105,20 @@ class DragDropEngine {
         this.clearDropHighlights(container);
         zone.classList.add('drag-over-invalid');
       }
+    });
 
-      e.dataTransfer.dropEffect = validation.valid ? 'move' : 'none';
+    // ── DRAG ENTER ──────────────────────────────────────────────────
+    // Needed on some Mac browsers to enable drop on the target
+    container.addEventListener('dragenter', (e) => {
+      const zone = e.target.closest('.slot-matrix-cell');
+      if (!zone || !this.draggedAppointment) return;
+      e.preventDefault();
     });
 
     // ── DRAG LEAVE ──────────────────────────────────────────────────
     container.addEventListener('dragleave', (e) => {
       const zone = e.target.closest('.slot-matrix-cell');
       if (!zone) return;
-      // Only clear when truly leaving the cell (not entering a child)
       if (!zone.contains(e.relatedTarget)) {
         zone.classList.remove('drag-over-valid', 'drag-over-invalid');
       }
@@ -109,32 +129,34 @@ class DragDropEngine {
       const zone = e.target.closest('.slot-matrix-cell');
       if (!zone) return;
 
+      // CRITICAL: prevent browser default (Mac snaps back without this)
       e.preventDefault();
+      e.stopPropagation();
+
       zone.classList.remove('drag-over-valid', 'drag-over-invalid');
 
       if (!this.draggedAptId) return;
       if (zone === this.sourceCell) return;
 
-      // Re-fetch from live data (safe after re-renders)
       const apt = CLINIC_DATA.appointments.find(a => a.id === this.draggedAptId);
       if (!apt) return;
 
       const targetDocId = zone.getAttribute('data-doctor-id');
       const targetTimeStart = zone.getAttribute('data-time-start');
-
       const validation = this.validateShift(apt, targetDocId, targetTimeStart);
 
       if (validation.valid) {
-        const oldDocName = CLINIC_DATA.doctors.find(d => d.id === apt.doctor)?.name || 'Doctor';
+        this._dropSuccess = true;
+
         const newDoc = CLINIC_DATA.doctors.find(d => d.id === targetDocId);
         const newDocName = newDoc?.name || 'Doctor';
+        const oldDocName = CLINIC_DATA.doctors.find(d => d.id === apt.doctor)?.name || 'Doctor';
 
-        // Calculate original duration
+        // Calculate duration and new times
         const [origSH, origSM] = apt.startTime.split(':').map(Number);
         const [origEH, origEM] = apt.endTime.split(':').map(Number);
         const durationMins = (origEH * 60 + origEM) - (origSH * 60 + origSM);
 
-        // Apply new start time
         const [newSH, newSM] = targetTimeStart.split(':').map(Number);
         const newEndTotalMins = newSH * 60 + newSM + durationMins;
         const newEH = Math.floor(newEndTotalMins / 60);
@@ -144,7 +166,6 @@ class DragDropEngine {
         apt.startTime = targetTimeStart;
         apt.endTime = `${String(newEH).padStart(2, '0')}:${String(newEM).padStart(2, '0')}`;
 
-        // Update human-readable time label
         const fmt = (h, m) => {
           const hr = h % 12 || 12;
           const ap = h >= 12 ? 'PM' : 'AM';
@@ -152,11 +173,9 @@ class DragDropEngine {
         };
         apt.timeLabel = `${fmt(newSH, newSM)} – ${fmt(newEH, newEM)}`;
 
-        // Match service to new doctor's primary service
         if (newDoc?.primaryService) apt.service = newDoc.primaryService;
         else if (newDoc?.supportedServices?.length > 0) apt.service = newDoc.supportedServices[0];
 
-        // Re-render grid (delegation means no re-init needed)
         if (window.MPCApp?.gridRenderer) {
           window.MPCApp.gridRenderer.render();
         }
@@ -185,9 +204,9 @@ class DragDropEngine {
     const [slotH, slotM] = targetTimeStart.split(':').map(Number);
     const [docSH, docSM] = targetDoc.workingHours.start.split(':').map(Number);
     const [docEH, docEM] = targetDoc.workingHours.end.split(':').map(Number);
-    const slotMins    = slotH  * 60 + slotM;
-    const docStartMins = docSH * 60 + docSM;
-    const docEndMins   = docEH * 60 + docEM;
+    const slotMins     = slotH  * 60 + slotM;
+    const docStartMins = docSH  * 60 + docSM;
+    const docEndMins   = docEH  * 60 + docEM;
 
     if (slotMins < docStartMins) {
       return { valid: false, reason: `Dr. ${targetDoc.name.split(' ').pop()}'s shift hasn't started yet` };
@@ -196,13 +215,11 @@ class DragDropEngine {
       return { valid: false, reason: `Dr. ${targetDoc.name.split(' ').pop()}'s shift has ended` };
     }
 
-    // Duration of dragged appointment
     const [oSH, oSM] = appointment.startTime.split(':').map(Number);
     const [oEH, oEM] = appointment.endTime.split(':').map(Number);
     const durMins = (oEH * 60 + oEM) - (oSH * 60 + oSM);
     const newEndMins = slotMins + durMins;
 
-    // Lunch break check
     if (targetDoc.lunchTime) {
       const [lSH, lSM] = targetDoc.lunchTime.start.split(':').map(Number);
       const [lEH, lEM] = targetDoc.lunchTime.end.split(':').map(Number);
@@ -211,7 +228,6 @@ class DragDropEngine {
       }
     }
 
-    // Conflict check against existing appointments on target doctor
     const conflicts = CLINIC_DATA.appointments.filter(a =>
       a.doctor === targetDocId &&
       a.id !== appointment.id &&
